@@ -1,0 +1,3 @@
+targets_dir targets/ 
+script_dir .
+data_file data.txt
