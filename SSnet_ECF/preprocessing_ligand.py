@@ -1,3 +1,4 @@
+import numpy as np
 import sys
 
 def get_inps():
@@ -23,7 +24,7 @@ f = open(d['data_file'], 'r')
 lines = f.readlines()
 f.close()
 
-smiles, tagets, score = [], [], []
+smiles, targets, score = [], [], []
 
 for line in lines:
 	if len(line.strip().split()) == 0:

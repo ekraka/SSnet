@@ -1,5 +1,7 @@
+import numpy as np
+import wget
 import sys
-
+import haxis
 import os
 
 def get_inps():
@@ -99,7 +101,7 @@ def t_k(tar, dat):
 def job(pdb):
     if pdb not in os.listdir('.'):
         try :
-            url = 'https://files.rcsb.org/download/'+pdb[:4]+'.pdb'
+            url = 'https://files.rcsb.org/download/'+pdb[:4].upper()+'.pdb'
             wget.download(url,pdb[:4]+'.pdb')
         except HTTPError:
             print ('Error while downloading:', pdb[:4])
@@ -124,29 +126,29 @@ def job(pdb):
 
 
 if __name__ == '__main__':
-	d = get_inps()
-	data_file = d['data_file']
-	path = d['targets_dir']
+        d = get_inps()
+        data_file = d['data_file']
+        path = d['targets_dir']
 
-	os.chdir(path)
 
-	f = open(d['data_file'], 'r')
-	lines = f.readlines()
-	f.close()
+        f = open(d['data_file'], 'r')
+        lines = f.readlines()
+        f.close()
 
-	targets = {}
+        os.chdir(path)
 
-	for line in lines:
-		if len(line.strip().split()) == 0:
-			continue
-		pdb = line.strip().split()[1] + '.pdb'
+        targets = {}
 
-		protein = job(pdb)
-		if protein:
-			targets[pdb] = protein 
+        for line in lines:
+                if len(line.strip().split()) == 0:
+                        continue
+                pdb = line.strip().split()[1] + '.pdb'
 
-	np.save('target_data.npy', targets)
+                protein = job(pdb)
+                if protein is not None:
+                        targets[pdb] = protein
 
+        np.save('target_data.npy', targets)
 
 
 

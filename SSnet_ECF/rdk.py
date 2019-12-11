@@ -1,3 +1,4 @@
+import sys
 import os
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -30,13 +31,13 @@ def get_inps():
 
     return d
 
-d = get_inps()
+d_inp = get_inps()
 
 X, protein, score = [], [], []
 count_er = 0
 
 d = np.load('ligand_data.npy').item()
-smiles, target, ic50 = d['smiles'], d['targets'], d['ic50']
+smiles, target, ic50 = d['smiles'], d['targets'], d['score']
 for i in range (len(target)):
     if type(target[i]) == list:
         target[i] = str(target[i][0])
@@ -44,7 +45,7 @@ for i in range (len(target)):
         target[i] = str(target[i].split(',')[0])
 
 
-t_k_data = np.load(d['targets_dir'] + 'target_data.npy').item()
+t_k_data = np.load(d_inp['targets_dir'] + 'target_data.npy').item()
 
 def t_k(tar, dat):
     if tar not in dat:
