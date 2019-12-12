@@ -32,6 +32,6 @@ for line in lines:
 	a,b,c = line.strip().split()
 	smiles.append(a)
 	targets.append(b)
-	score.append(c)
+	score.append(int(c))
 
 np.save('ligand_data.npy', {'smiles':smiles, 'targets': targets, 'score': score})

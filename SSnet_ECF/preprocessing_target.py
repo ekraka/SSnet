@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
                 protein = job(pdb)
                 if protein is not None:
-                        targets[pdb] = protein
+                        targets[pdb[:-4]] = protein
 
         np.save('target_data.npy', targets)
 
