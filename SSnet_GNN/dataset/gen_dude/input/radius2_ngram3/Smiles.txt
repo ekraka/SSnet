@@ -1,0 +1,2 @@
+CC(=O)NC(CC1=CC=C(C=C1)O)C(=O)O
+CCCCCc1cc(c2c(c1)OC([C@H]3[C@H]2C=C(CC3)C)(C)C)O

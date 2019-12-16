@@ -189,11 +189,13 @@ def job(pdb):
 
 if __name__ == "__main__":
 
+    DATASET, radius, ngram = sys.argv[1:]
+
     data_file = '../dataset/' + DATASET + '/original/data.txt'
     path = './targets/'
 
 
-    f = open(d['data_file'], 'r')
+    f = open(data_file, 'r')
     lines = f.readlines()
     f.close()
 
@@ -210,7 +212,8 @@ if __name__ == "__main__":
             if protein is not None:
                     pro_dic[pdb[:-4]] = protein
 
-    DATASET, radius, ngram = sys.argv[1:]
+    os.chdir('../')
+
     radius, ngram = map(int, [radius, ngram])
 
     with open('../dataset/' + DATASET + '/original/data.txt', 'r') as f:
