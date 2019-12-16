@@ -46,26 +46,12 @@ for i in range (len(target)):
 
 
 t_k_data = np.load(d_inp['targets_dir'] + 'target_data.npy').item()
-
+#print (t_k_data['5tgz'].shape)
 def t_k(tar, dat):
     if tar not in dat:
         #print (tar)
         return None
-    #print dat[tar][0]
-    t, k = [], []
-    if len(dat[tar]) > 6:
-        #print (tar, len(dat[tar]))
-        return None
-    for i,j in dat[tar]:
-        if len(i) > 1500 or len(i) < 1:
-            print (tar, len(dat[tar]), len(i))
-            
-            return None
-        t += i + [0]*(1500 -len(i))
-        k += j + [0]*(1500 -len(i))
-        #print len(i)
-        #exit()
-    return [t+[0]*(9000 - len(t)), k+[0]*(9000 - len(k))]#k+[0]*(18000 - len(t+k)) 
+    return dat[tar]
 
 pd = copy.copy(target)
 pdbs = []
