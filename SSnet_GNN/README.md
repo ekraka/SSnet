@@ -6,9 +6,9 @@ We provide two major scripts:
 
 - code/preprocess_data.py creates the input tensor data of CPIs
 for processing with PyTorch from the original data
-(see dataset/human or celegans/original/data.txt).
+(see gen_dude/original/data.txt). To create your own make a directory and place the data as name_of_data/original/data.txt (make sure to change dataset name in preprocessing.sh)
 - code/run_training.py trains the model using the above preprocessed data
-(see dataset/human or celegans/input).
+(make sure to change dataset name in run_training.sh).
 
 (i) Create the tensor data of CPIs with the following command:
 ```
