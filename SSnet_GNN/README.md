@@ -28,15 +28,3 @@ The training and test results and the model are saved in the output directory
 
 (iii) You can change the hyperparameters in preprocess_data.sh and run_training.sh.
 Try to learn various models.
-
-
-## Result
-
-Learning curves (x-axis is epoch and y-axis is AUC)
-on the test datasets of human and *C. elegans* are as follows:
-
-<div align="center">
-<p><img src="learning_curves.jpeg" width="800" /></p>
-</div>
-
-These results can be reproduce by the above two commands (i) and (ii).
