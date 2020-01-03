@@ -143,6 +143,9 @@ if __name__ == '__main__':
                 if len(line.strip().split()) == 0:
                         continue
                 pdb = line.strip().split()[1] + '.pdb'
+		
+		if pdb[:-4] in targets:
+			continue
 
                 protein = job(pdb)
                 if protein is not None:
