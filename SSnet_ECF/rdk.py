@@ -11,7 +11,7 @@ def latent_space(smiles, N_BITS=512):
     if m is None:
         return None
         raise ValueError('SMILES cannot be converted to a RDKit molecules:', smiles)
-
+    m = Chem.AddHs(m)
     return np.array(AllChem.GetMorganFingerprintAsBitVect(m, 2, nBits=N_BITS))
 
 def get_inps():
