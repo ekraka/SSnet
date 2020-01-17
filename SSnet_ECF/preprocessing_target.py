@@ -3,6 +3,7 @@ import wget
 import sys
 import haxis
 import os
+from urllib.error import HTTPError
 
 def get_inps():
 
@@ -105,6 +106,7 @@ def job(pdb):
             wget.download(url,pdb[:4]+'.pdb')
         except HTTPError:
             print ('Error while downloading:', pdb[:4])
+            return None
 
     make(pdb)
     haxis.haxis('temp')
@@ -146,8 +148,10 @@ if __name__ == '__main__':
 
                 if pdb[:-4] in targets:
                         continue
-
-                protein = job(pdb)
+                try:
+                        protein = job(pdb)
+                except ZeroDivisionError:
+                        print (pdb, 'ignored due to math error!')
                 if protein is not None:
                         targets[pdb[:-4]] = protein
 
