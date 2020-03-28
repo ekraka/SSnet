@@ -29,5 +29,11 @@ Please make sure to capitalize the four letter pdb id
 
 python /users/nirajv/PDiML/GRAD/grad_cam.py 6M18.pdb 'C[C@H](N[C@@H](CCc1ccccc1)C(=O)O)C(=O)N1[C@H](C(=O)O)C[C@H]2CCCC[C@@H]21'
 
+### Outputs
 
+results_pdb_file.pdb
+
+To visualize in pymol type the following command after loading the pdb:
+
+spectrum b, rainbow, minimum = 0.0, maximum = 100.0
 
