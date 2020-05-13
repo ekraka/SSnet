@@ -231,7 +231,7 @@ def get_heatm(conv, x, model, ref = 0):
     #print (predicted_class_output)
     if ref:
 
-            print ('Predicted class:', predicted_class, model.predict(x)[0][0])
+            pass
 
     last_conv_layer = model.get_layer(conv)
 
