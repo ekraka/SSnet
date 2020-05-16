@@ -1,7 +1,7 @@
+## For screening on unknow SMILES and Targets (proteins), check SSnet_in_Action
+
 # SSnet
 SSnet - Secondary Structure based End-to-End Learning model for Protein-Ligand Interaction Prediction
-
-## For screening on unknow SMILES and Targets (proteins), check SSnet_in_Action
 
 
 ## Training
