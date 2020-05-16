@@ -3,7 +3,7 @@
 
 python path_to_SSnet_in_Action/predict.py pdb_file.pdb 'smiles'
 
-Please make sure to capitalize the four letter pdb id
+Please make sure to capitalize the four letter pdb id if the pdb is not present in the working directory (SSnet will download from RCSB website).
 
 ### Example
 
