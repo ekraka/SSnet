@@ -1,7 +1,7 @@
 # SSnet
 SSnet - Secondary Structure based End-to-End Learning model for Protein-Ligand Interaction Prediction
 
-For direct implimentation click SSnet_in_Action and check Readme
+## For screening on unknow SMILES and Targets (proteins), check SSnet_in_Action
 
 
 ## Training
