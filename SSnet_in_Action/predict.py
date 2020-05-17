@@ -5,34 +5,25 @@ import sys
 from rdkit import Chem
 from rdkit.Chem import AllChem
 import rdkit.Avalon.pyAvalonTools as A
-import pandas as pd
 from keras.models import Sequential,Model
 import tensorflow as tf
 from keras.layers import Dense, Activation, Input,RepeatVector,Embedding, Flatten, Concatenate,Dropout
 from keras.models import Model
 from keras.utils.vis_utils import model_to_dot
-from sklearn import metrics as mt
 from keras import metrics
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import average, concatenate,RepeatVector,Lambda,add,subtract
 from keras.layers.normalization import BatchNormalization
 from keras.utils.vis_utils import model_to_dot
-from sklearn.utils import class_weight, shuffle
 import random
 from keras import backend as K
 from keras.callbacks import (ModelCheckpoint, LearningRateScheduler,
                              EarlyStopping, ReduceLROnPlateau,CSVLogger)
-from sklearn.metrics import precision_recall_fscore_support, classification_report
-import pickle
 from keras.layers import Conv2D, MaxPooling2D,Conv1D,GlobalMaxPooling1D,MaxPooling1D,Reshape,Add
 from keras.layers import Conv1D, GlobalAveragePooling1D, MaxPooling1D,AveragePooling1D
 import make_target as mtt
 from keras.regularizers import l2 
-from sklearn.metrics import roc_auc_score
 
 def conv_blocks(ft_number,k_size,input_tensor):
     x = Conv1D(filters=ft_number, 
