@@ -17,3 +17,11 @@ python path_to_SSnet_in_Action/predict.py 6M18.pdb test.smi
 ### Outputs
 
 results_pdb_file.pdb
+
+### Requirements (python modules)
+
+1) wget
+2) keras
+3) tensorflow
+4) rdkit
+
