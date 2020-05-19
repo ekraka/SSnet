@@ -25,7 +25,7 @@ Change the weight_file in the last few lines in GRAD/grad_cam.py to point GRAD/m
 
 python path_to_GRAD/grad_cam.py pdb_file.pdb 'smiles'
 
-Please make sure to capitalize the four letter pdb id
+Please make sure to capitalize the four letter pdb id if not present in the working directory. This way, SSnet can download from rscb website.
 
 ### Example
 
