@@ -39,3 +39,5 @@ To visualize in pymol type the following command after loading the pdb:
 
 spectrum b, rainbow, minimum = 0.0, maximum = 100.0
 
+## For dependencies check requirements.txt
+
