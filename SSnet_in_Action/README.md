@@ -16,7 +16,7 @@ python path_to_SSnet_in_Action/predict.py 6M18.pdb test.smi
 
 ### Outputs
 
-results_pdb_file.pdb
+results_pdb_file.txt
 
 ### Requirements (python modules)
 
