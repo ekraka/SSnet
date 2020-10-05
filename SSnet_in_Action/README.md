@@ -1,5 +1,21 @@
 
 ### Usage
+
+parameters:
+-m <mode>
+    i) mode = 10 (Default)
+        (This model was trained based on 10nM IC50 cutoff for actives)
+    ii) mode = 25
+        (This model was trained based on 25nM IC50 cutoff for actives)
+    iii) mode = 100
+        (This model was trained based on 100nM IC50 cutoff for actives)
+    iv) mode = grad
+        (This model was trained for generating heatmaps for potential binding location)
+  
+ -h
+    provides help I guess!
+
+
 ## Screening
 Screening can be performed based on single target - single ligand, single target - multiple ligand as: 
 
@@ -22,6 +38,8 @@ python path_to_SSnet_in_Action/predict.py -t 6M18.pdb -l test.smi
 #### For multiple target and multiple ligands
 
 use '-i' followed by input file
+The input file should math the format as given in 'example_multi_input.txt'
+i.e smile [space] target
 
 
 ### Outputs
@@ -34,4 +52,16 @@ results_pdb_file.txt
 2) keras
 3) tensorflow
 4) rdkit
+
+
+
+
+
+## GRAD CAM analysis
+
+GradCAM analysis can be perfomed by changing mode to grad
+-m grad
+
+
+
 
