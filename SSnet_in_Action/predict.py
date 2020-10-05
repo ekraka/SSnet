@@ -1,10 +1,7 @@
-import wget
+import pickle
 import os
 import numpy as np
 import sys
-from rdkit import Chem
-from rdkit.Chem import AllChem
-import rdkit.Avalon.pyAvalonTools as A
 from keras.models import Sequential,Model
 import tensorflow as tf
 from keras.layers import Dense, Activation, Input,RepeatVector,Embedding, Flatten, Concatenate,Dropout
@@ -23,6 +20,12 @@ from keras.layers import Conv2D, MaxPooling2D,Conv1D,GlobalMaxPooling1D,MaxPooli
 from keras.layers import Conv1D, GlobalAveragePooling1D, MaxPooling1D,AveragePooling1D
 import make_target as mtt
 from keras.regularizers import l2 
+import preprocessing_ligand as ppl 
+import grad
+
+# remove if using saved fingerprints
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 def conv_blocks(ft_number,k_size,input_tensor):
     x = Conv1D(filters=ft_number, 
@@ -119,64 +122,6 @@ def create_multiBranch_Conv_model(Proeins_shape,Drags_shape):
     model = Model(inputs=[proeins_input_tensor,drag_input_tensor], outputs=final_output)
     return model
 
-
-def check_chain(fi):
-        f = open(fi, 'r')
-        lines = f.readlines()
-        f.close()
-
-        d = {}
-        for line in lines:
-                if 'ENDMDL' in line:
-                        break
-                if 'ATOM' == line.strip().split()[0]:
-                        temp = line[20:22].strip()
-                        if temp not in d:
-                                d[temp] = 1
-        return d
-
-
-def make(i):
-        if i[-4:] != '.pdb':
-                return None
-        k = check_chain(i)
-        if len(k) > 8:
-                print (i,'is ignored due to large number of chains !')
-                return None
-
-        g = open('temp', 'w')
-        g.write(""" 
-
-
-
-""")
-        name = i.split('.')[0]
-        for j in k:
-                g.write(name+'\t'+j+'\n')
-
-        g.close()
-
-        return 1
-
-def data(fi):
-        f = open(fi, 'r')
-        lines = f.readlines()
-        f.close()
-
-        k, t = [], []
-        ref = 1
-
-        for line in lines:
-                if ref and len(line.strip().split()) == 0:
-                        break
-                if ref:
-                        temp = line.strip().split()
-                        k.append(float(temp[1]))
-                        t.append(float(temp[2]))
-        #print fi
-        #print lines[12]
-        return k,t
-
 def t_k(tar, dat):
     if tar not in dat:
         #print (tar)
@@ -204,7 +149,7 @@ def latent_space(smiles, N_BITS=512):
         raise ValueError('SMILES cannot be converted to a RDKit molecules:', smiles)
     m = Chem.AddHs(m)
     return np.array(AllChem.GetMorganFingerprintAsBitVect(m, 2, nBits=N_BITS))
-    return np.array(A.GetAvalonFP(m))
+    #return np.array(A.GetAvalonFP(m))
 
 def round_sig(x, sig=3):
     if x < 1e-2:
@@ -237,24 +182,35 @@ def get_dat_sm(smiles):
     print (count_er)
     return np.array(X), sm
 
-def predic(model, X, proteins, sm, refe_f):
+def predic(model, X, proteins, sm, refe_f, tar = None, sm_name = None):
     if not refe_f:
         x = [proteins.reshape((1, 9000, 2)), X.reshape((1, 512))]
     else:
         x = [proteins.reshape((-1, 9000, 2)), X.reshape((-1, 512))]
     ans = model.predict(x)
-    l = [[float(ans[i][0]), sm[i]] for i in range (len(sm))]
+    if tar:
+        l = [[float(ans[i][0]), sm[i], tar[i]] for i in range (len(sm))]
+    else:
+        l = [[float(ans[i][0]), sm[i]] for i in range (len(sm))]
+    
     l.sort(reverse = True)
     if not refe_f:
         print('SSnet probability:', l[0][0])
-    g = open('results_'+sys.argv[1].split('.')[0]+'.txt', 'a')
+    if sm_name:
+        g = open('results_'+sys.argv[1].split('/')[-1].split('.')[0]+'_' + sys.argv[2].split('/')[-1].split('.')[0] + '.txt', 'w')
+    else:
+        g = open('results_'+sys.argv[1].split('/')[-1].split('.')[0]+'.txt', 'w')
     for i in range (len(l)):
-        g.write(l[i][1]+' '+str(l[i][0])+'\n')
+        if tar:
+            g.write(l[i][1]+' '+str(l[i][2])+' '+str(l[i][0])+'\n')
+        else:
+            g.write(l[i][1]+' '+str(l[i][0])+'\n')
     g.close()
     print ('Done!')
 
-def job(pdb, smile, model_weights):
+def get_pdb_data(pdb):
     if pdb not in os.listdir('.'):
+        import wget
         print ('PDB file not found, trying to download!')
         try :
             url = 'https://files.rcsb.org/download/'+pdb[:4]+'.pdb'
@@ -268,32 +224,186 @@ def job(pdb, smile, model_weights):
     d = mtt.get_kt(pdb, {})
 
     #np.save('temp.npy', d)
-    proteins = np.array(t_k(filename, d)).T
-    refe_f = 0
-    if smile[-4:] == '.smi':
-            refe_f = 1 # reference file 
-            X, smile_arr = get_dat_sm(smile)
-    else:
-            X = latent_space(str(smile))
-            smile_arr = [smile]
+    return np.array(t_k(filename, d)).T
 
-    Proeins_shape = proteins.shape
+def get_sm_tar_data(smiles, targets, d):
+    X, proteins, P = [], [], []
+    sm , tar = [], []
+    sm_dic = {}
+    count_er = 0
+
+    for i in range (len(smiles)):
+        s = smiles[i]
+        if s not in sm_dic:
+            x = latent_space(s)
+            sm_dic[s] = x
+        else:
+            x = sm_dic[s]
+        if x is None:
+            count_er += 1
+            continue
+        try:
+            p = get_pdb_data(os.path.join(d[targets_dir],targets[i] + '.pdb'))
+        except:
+            continue 
+            count_er += 1
+        sm.append(s)
+        tar.append(targets[i])
+        proteins.append(p)
+        X.append(x)
+    print ('Number of errors', count_er)
+    return np.array(sm), np.array(X), np.array(tar), np.array(proteins)
+
+
+def pro_from_file():
+    smiles, targets, d = ppl.job(sys.argv[1]) # provide single input as inp
+    sm, X, tar, proteins = get_sm_tar_data(smiles, targets, d)
+    return sm, X, tar, proteins
+
+
+    
+
+
+def job(pdb, smile, model_weights, file_ref = 1):
+    #print (file_ref)
+    if file_ref < 4 or file_ref > 5:
+        from rdkit import Chem
+        from rdkit.Chem import AllChem
+    Proeins_shape = (9000,2)
     Drags_shape=512#X.shape[0]
-    #print (proteins.shape)
-    print(Proeins_shape)
-    print(Drags_shape)
-
     multiBranch_Conv_model = create_multiBranch_Conv_model(Proeins_shape,Drags_shape,)
     multiBranch_Conv_model.load_weights(model_weights)
-    if refe_f:
+
+    if file_ref == 1: # file for PLI
+        sm, X, tar, proteins = pdb_from_file()
+        predic(multiBranch_Conv_model, X, proteins, sm, 1, tar)
+
+    elif file_ref == 2: # for a pdb and .smi 
+        X, smile_arr = get_dat_sm(smile)
+        proteins = get_pdb_data(pdb)
         proteins = np.array([proteins for i in range (len(X))])
-    #print (proteins_.shape)
-    predic(multiBranch_Conv_model, X, proteins, smile_arr, refe_f)
+        predic(multiBranch_Conv_model, X, proteins, smile_arr, 1, None, 1)
+    elif file_ref == 3: # a protein and a smiles
+        X = latent_space(str(smile))
+        smile_arr = [smile]
+        proteins = get_pdb_data(pdb)
+        predic(multiBranch_Conv_model, X, proteins, smile_arr, 0)
+    elif file_ref == 4: # from saved fingerprints as .npy
+        data = np.load(smile).item()
+        X = np.array(data['X'])
+        proteins = get_pdb_data(pdb)
+        proteins = np.array([proteins for i in range (len(X))])
+        predic(multiBranch_Conv_model, X, proteins, data['smile_arr'], 1, None, 1)
+    elif file_ref == 5: # from saved fingerprints as .dat
+        with open(smile, 'rb') as infile:
+            data = pickle.load(infile)
+        X = np.array(data['X'])
+        proteins = get_pdb_data(pdb)
+        proteins = np.array([proteins for i in range (len(X))])
+        predic(multiBranch_Conv_model, X, proteins, data['smile_arr'], 1, None, 1)
+    elif file_ref == 6: # protein and smile for grad
+        X = latent_space(str(smile))
+        smile_arr = [smile]
+        proteins = get_pdb_data(pdb)
+        grad.job(proteins, X, pdb, multiBranch_Conv_model)
+        #predic(multiBranch_Conv_model, X, proteins, smile_arr, 0)
+
+def pars_parm():
+    print ("""
+======================================================================
+==       Secondary Structure Based Deep Neural Network Model        ==
+==          for Protein-ligand Interaction Prediction :             ==
+==                         Code version 1.0                         ==
+==                                                                  ==
+==    Computational and Theoretical Chemistry Group (CATCO), SMU    ==
+==                     Dallas, Texas 75275 USA                      ==
+======================================================================
+
+
+            _|_|_|    _|_|_|                        _|      
+            _|        _|        _|_|_|    _|_|    _|_|_|_|  
+            _|_|      _|_|    _|    _|  _|_|_|_|    _|      
+                _|        _|  _|    _|  _|          _|      
+            _|_|_|    _|_|_|  _|    _|    _|_|_|      _|_|  
+                                                            
+If no idea how it works!, include -h as argument                                                           
+                                                            
+                                                            """)
+    # Default
+    d = {'-m': '10'}
+    for i in range (1, len(sys.argv)):
+        if sys.argv[i] == '-h':
+            d['-h'] = 1
+        elif '-' in sys.argv[i]:
+            d[sys.argv[i]] = sys.argv[i+1]
+    return d 
+
+def help_args():
+    print("""
+Check Github page for details:
+https://github.com/ekraka/SSnet 
+
+SSnet can be used with one of the four different models:
+-m <mode>
+    i) mode = 10 (Default)
+        (This model was trained based on 10nM IC50 cutoff for actives)
+    ii) mode = 25
+        (This model was trained based on 25nM IC50 cutoff for actives)
+    iii) mode = 100
+        (This model was trained based on 100nM IC50 cutoff for actives)
+    iv) mode = grad
+        (This model was trained for generating heatmaps for potential binding location)
+
+Multiple proteins and ligands can be provided as input file
+-i <file>
+
+Single protein can be described as
+-p <pdb_file>
+
+ligands can be provided as either SMILES or a .smi file with multiple ligands
+-l <smi>
+    
+    """)
     
 
 if __name__ == '__main__':
-    model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'model.h5')
-    job(sys.argv[1], sys.argv[2], model_weights)
+
+    parms = pars_parm()
+    print ('Input parameters:', parms)
     
+    if '-m' in sys.argv:
+        m = parms['-m']
+        if m == '10':
+            model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_10.h5')
+        elif m == '100':
+            model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_100.h5')
+        elif m == '25':
+            model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_25.h5')
+        elif m == 'grad':
+            model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_grad.h5')
+        else:
+            raise Exception('-m mode unknown!')
+    else:
+        model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_10.h5')
+
+    if '-i' in parms:
+        job(parms['-i'], None, model_weights, 1)
+    elif '-h' in parms:
+        help_args()
+        print ('Help might come through others ways too! Email: nirajverma288@gmail.com')
+    else:
+        target, ligand = parms['-t'], parms['-l']
+        if ligand[-4:]  == '.smi':
+            job(parms['-t'], parms['-l'], model_weights, 2)
+        elif ligand[-4:]  == '.npy':
+            job(parms['-t'], parms['-l'], model_weights, 4)
+        elif ligand[-4:]  == '.dat':
+            job(parms['-t'], parms['-l'], model_weights, 5)
+        elif parms['-m'] == 'grad':
+            job(parms['-t'], parms['-l'], model_weights, 6)
+        else:
+            job(parms['-t'], parms['-l'], model_weights, 3)
+    
+
 
 
