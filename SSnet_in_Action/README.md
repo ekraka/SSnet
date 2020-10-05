@@ -3,13 +3,17 @@
 
 parameters:
 -m <mode>
-    > mode = 10 (Default)
+    
+      mode = 10 (Default)
         (This model was trained based on 10nM IC50 cutoff for actives)
-    > mode = 25
+    
+      mode = 25
         (This model was trained based on 25nM IC50 cutoff for actives)
-    > mode = 100
+        
+      mode = 100
         (This model was trained based on 100nM IC50 cutoff for actives)
-    > mode = grad
+        
+      mode = grad
         (This model was trained for generating heatmaps for potential binding location)
   
  -h
