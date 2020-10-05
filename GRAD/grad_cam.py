@@ -469,7 +469,7 @@ def job(pdb, smile):
     create_pdb(pdb, heatmap)
 
 if __name__ == '__main__':
-    weight_file = '/users/nirajv/PDiML/multiBranch_Conv_model_copy.h5'
+    weight_file = '/users/nirajv/scratch/test/SSnet/GRAD/multiBranch_Conv_model_copy.h5'
     job(sys.argv[1], sys.argv[2])
     
 

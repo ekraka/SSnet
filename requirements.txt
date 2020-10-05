@@ -1,0 +1,8 @@
+keras
+tensorflow
+rdkit
+wget
+pickle
+numpy
+sklearn
+pandas
