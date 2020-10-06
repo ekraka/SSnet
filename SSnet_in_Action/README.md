@@ -78,7 +78,7 @@ GradCAM analysis can be perfomed by changing mode to grad
 
 ### Outputs
 
-results_pdb_file.pdb
+pdb_file_GRAD.pdb
 
 The heatmap is wriiten as b-factor
 
