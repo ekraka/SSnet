@@ -80,7 +80,7 @@ GradCAM analysis can be perfomed by changing mode to grad
 
 pdb_file_GRAD.pdb
 
-The heatmap is wriiten as b-factor
+The heatmap is written as b-factor
 
 To visualize in pymol type the following command after loading the pdb:
 
