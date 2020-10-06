@@ -33,6 +33,8 @@ Please make sure to capitalize the four letter pdb id if the protein is not pres
 ### Example
 
     python path_to_SSnet_in_Action/predict.py -t 6M18.pdb -l 'C[C@H](N[C@@H](CCc1ccccc1)C(=O)O)C(=O)N1[C@H](C(=O)O)C[C@H]2CCCC[C@@H]21'
+    
+    python path_to_SSnet_in_Action/predict.py -m 25 -t 6M18.pdb -l 'C[C@H](N[C@@H](CCc1ccccc1)C(=O)O)C(=O)N1[C@H](C(=O)O)C[C@H]2CCCC[C@@H]21'
 
 
 #### Provide ligands as .smi file (eg test.smi) for multiple ligands
@@ -44,6 +46,8 @@ Please make sure to capitalize the four letter pdb id if the protein is not pres
 use '-i' followed by input file
 The input file should math the format as given in 'example_multi_input.txt'
 i.e smile [space] target
+
+    python path_to_SSnet_in_Action/predict.py -i example_multi_input.txt
 
 
 ### Outputs
