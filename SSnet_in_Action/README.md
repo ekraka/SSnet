@@ -18,6 +18,8 @@ parameters:
   
  -h
     provides help I guess!
+    
+        python path_to_SSnet_in_Action/predict.py -h
 
 
 ## Screening
