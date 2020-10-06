@@ -131,14 +131,16 @@ def get_kt(i, d):
    #residue = int(sys.argv[2])#76
    inp_f = i#sys.argv[1]#"c_alpha.txt"
 
+   filename = i.split('/')[-1][:-4]
+
    x,y,z = get_alpha_c_xyz(inp_f)
-   d[i[:-4]] = []
+   d[filename] = []
    for j in range (len(x)):
        x1, y1, z1 = x[j], y[j], z[j]
        if len(x1) < 5:
            continue
        k, t = get_init_kt(x1, y1, z1)
-       d[i[:-4]].append([k,t])
+       d[filename].append([k,t])
 
    return d
 

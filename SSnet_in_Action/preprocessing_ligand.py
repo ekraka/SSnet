@@ -20,9 +20,7 @@ def get_inps(file):
 
 def job(file):
 
-	d = get_inps(file)
-
-	f = open(d['data_file'], 'r')
+	f = open(file, 'r')
 	lines = f.readlines()
 	f.close()
 
@@ -31,11 +29,11 @@ def job(file):
 	for line in lines:
 		if len(line.strip().split()) == 0:
 			continue
-		a,b,c = line.strip().split()
+		a,b = line.strip().split()[:2]
 		smiles.append(a)
 		targets.append(b)
 
-	return smiles,targets, d
+	return smiles,targets
 
 	#np.save('ligand_data.npy', {'smiles':smiles, 'targets': targets, 'score': score})
 

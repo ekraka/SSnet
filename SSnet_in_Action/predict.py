@@ -183,12 +183,13 @@ def get_dat_sm(smiles):
     return np.array(X), sm
 
 def predic(model, X, proteins, sm, refe_f, tar = None, sm_name = None):
+    global parms
     if not refe_f:
         x = [proteins.reshape((1, 9000, 2)), X.reshape((1, 512))]
     else:
         x = [proteins.reshape((-1, 9000, 2)), X.reshape((-1, 512))]
     ans = model.predict(x)
-    if tar:
+    if tar is not None:
         l = [[float(ans[i][0]), sm[i], tar[i]] for i in range (len(sm))]
     else:
         l = [[float(ans[i][0]), sm[i]] for i in range (len(sm))]
@@ -197,40 +198,45 @@ def predic(model, X, proteins, sm, refe_f, tar = None, sm_name = None):
     if not refe_f:
         print('SSnet probability:', l[0][0])
     if sm_name:
-        g = open('results_'+sys.argv[1].split('/')[-1].split('.')[0]+'_' + sys.argv[2].split('/')[-1].split('.')[0] + '.txt', 'w')
+        g = open('results_'+parms['-t'].split('.')[0]+'_' + parms['-l'].split('.')[0] + '.txt', 'w')
+    elif '-i' in parms:
+        g = open('results_'+parms['-i'].split('.')[0] +'.txt', 'w')
     else:
-        g = open('results_'+sys.argv[1].split('/')[-1].split('.')[0]+'.txt', 'w')
+        g = open('results_'+parms['-t'].split('.')[0] +'.txt', 'w')
     for i in range (len(l)):
-        if tar:
+        if tar is not None:
             g.write(l[i][1]+' '+str(l[i][2])+' '+str(l[i][0])+'\n')
         else:
             g.write(l[i][1]+' '+str(l[i][0])+'\n')
     g.close()
     print ('Done!')
 
-def get_pdb_data(pdb):
-    if pdb not in os.listdir('.'):
+def get_pdb_data(pdb, targets_dir = '.'):
+    if pdb not in os.listdir(targets_dir):
         import wget
-        print ('PDB file not found, trying to download!')
+        print ('PDB file not found, trying to download!', pdb[:-4])
         try :
-            url = 'https://files.rcsb.org/download/'+pdb[:4]+'.pdb'
-            wget.download(url,pdb[:4]+'.pdb')
-        except HTTPError:
-            print ('Error while downloading:', pdb[:4])
+            url = 'https://files.rcsb.org/download/'+pdb[:-4]+'.pdb'
+            wget.download(url,os.path.join(targets_dir,pdb))
+        except:
+            print ('Error while downloading:', pdb[:-4])
+            return None
 
 
-    filename = pdb.split('.')[0]
+    filename = pdb[:-4]
 
-    d = mtt.get_kt(pdb, {})
+    d = mtt.get_kt(os.path.join(targets_dir, pdb), {})
 
     #np.save('temp.npy', d)
     return np.array(t_k(filename, d)).T
 
-def get_sm_tar_data(smiles, targets, d):
+def get_sm_tar_data(smiles, targets, targets_dir):
     X, proteins, P = [], [], []
     sm , tar = [], []
     sm_dic = {}
     count_er = 0
+
+    tar_dic = {}
 
     for i in range (len(smiles)):
         s = smiles[i]
@@ -243,10 +249,16 @@ def get_sm_tar_data(smiles, targets, d):
             count_er += 1
             continue
         try:
-            p = get_pdb_data(os.path.join(d[targets_dir],targets[i] + '.pdb'))
-        except:
-            continue 
+            #print (os.path.join(targets_dir,targets[i] + '.pdb'))
+            if targets[i] not in tar_dic:
+                p = get_pdb_data(targets[i] + '.pdb', targets_dir)
+                #print (p)
+                tar_dic[targets[i]] = p 
+            else:
+                p = tar_dic[targets[i]]
+        except TypeError:
             count_er += 1
+            continue 
         sm.append(s)
         tar.append(targets[i])
         proteins.append(p)
@@ -255,9 +267,10 @@ def get_sm_tar_data(smiles, targets, d):
     return np.array(sm), np.array(X), np.array(tar), np.array(proteins)
 
 
-def pro_from_file():
-    smiles, targets, d = ppl.job(sys.argv[1]) # provide single input as inp
-    sm, X, tar, proteins = get_sm_tar_data(smiles, targets, d)
+def pro_from_file(input_file, targets_dir):
+    smiles, targets = ppl.job(input_file) # provide single input as inp
+    #print (smiles, targets)
+    sm, X, tar, proteins = get_sm_tar_data(smiles, targets, targets_dir)
     return sm, X, tar, proteins
 
 
@@ -275,7 +288,8 @@ def job(pdb, smile, model_weights, file_ref = 1):
     multiBranch_Conv_model.load_weights(model_weights)
 
     if file_ref == 1: # file for PLI
-        sm, X, tar, proteins = pdb_from_file()
+        sm, X, tar, proteins = pro_from_file(pdb, smile) # input_file, proteins_directory
+        #print (proteins)
         predic(multiBranch_Conv_model, X, proteins, sm, 1, tar)
 
     elif file_ref == 2: # for a pdb and .smi 
@@ -330,7 +344,7 @@ If no idea how it works!, include -h as argument
                                                             
                                                             """)
     # Default
-    d = {'-m': '10'}
+    d = {'-m': '10', '-t_dir': '.'}
     for i in range (1, len(sys.argv)):
         if sys.argv[i] == '-h':
             d['-h'] = 1
@@ -387,7 +401,7 @@ if __name__ == '__main__':
         model_weights = os.path.join(os.path.split(sys.argv[0])[0], 'models/model_10.h5')
 
     if '-i' in parms:
-        job(parms['-i'], None, model_weights, 1)
+        job(parms['-i'], parms['-t_dir'], model_weights, 1)
     elif '-h' in parms:
         help_args()
         print ('Help might come through others ways too! Email: nirajverma288@gmail.com')
