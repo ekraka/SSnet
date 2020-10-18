@@ -46,8 +46,11 @@ Please make sure to capitalize the four letter pdb id if the protein is not pres
 #### For multiple target and multiple ligands
 
 use '-i' followed by input file.
+
 The input file should match the format as given in 'example_multi_input.txt'
+
 i.e smile [space] target
+
 -t_dir points to the directory where pdb files are (if not present, SSnet will try to download from RCSB website)
 
     python path_to_SSnet_in_Action/predict.py -i example_multi_input.txt -t_dir '.'
