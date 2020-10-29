@@ -129,7 +129,7 @@ def t_k(tar, dat):
     #print dat[tar][0]
     t, k = [], []
     if len(dat[tar]) > 6:
-        #print (tar, len(dat[tar]))
+        print ('Error!, More than 6 chains in the protein', tar)#print (tar, len(dat[tar]))
         return None
     for i,j in dat[tar]:
         if len(i) > 1500 or len(i) < 1:
@@ -184,6 +184,7 @@ def get_dat_sm(smiles):
 
 def predic(model, X, proteins, sm, refe_f, tar = None, sm_name = None):
     global parms
+    #print (proteins)
     if not refe_f:
         x = [proteins.reshape((1, 9000, 2)), X.reshape((1, 512))]
     else:
@@ -224,6 +225,9 @@ def get_pdb_data(pdb, targets_dir = '.'):
 
 
     filename = pdb[:-4]
+
+    if targets_dir == '.':
+        targets_dir = ''
 
     d = mtt.get_kt(os.path.join(targets_dir, pdb), {})
 
