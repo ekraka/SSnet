@@ -7,7 +7,6 @@ import tensorflow as tf
 from keras.layers import Dense, Activation, Input,RepeatVector,Embedding, Flatten, Concatenate,Dropout
 from keras.models import Model
 from keras.utils.vis_utils import model_to_dot
-import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import average, concatenate,RepeatVector,Lambda,add,subtract
 from keras.layers.normalization import BatchNormalization
@@ -194,8 +193,8 @@ def predic(model, X, proteins, sm, refe_f, tar = None, sm_name = None):
         l = [[float(ans[i][0]), sm[i], tar[i]] for i in range (len(sm))]
     else:
         l = [[float(ans[i][0]), sm[i]] for i in range (len(sm))]
-    
-    l.sort(reverse = True)
+    if '-s' in parms: 
+        l.sort(reverse = True)
     if not refe_f:
         print('SSnet probability:', l[0][0])
     if sm_name:
@@ -352,6 +351,8 @@ If no idea how it works!, include -h as argument
     for i in range (1, len(sys.argv)):
         if sys.argv[i] == '-h':
             d['-h'] = 1
+        elif sys.argv[i] == '-s':
+            d['-s'] = 1
         elif '-' in sys.argv[i]:
             d[sys.argv[i]] = sys.argv[i+1]
     return d 
@@ -371,6 +372,9 @@ SSnet can be used with one of the four different models:
         (This model was trained based on 100nM IC50 cutoff for actives)
     iv) mode = grad
         (This model was trained for generating heatmaps for potential binding location)
+
+-s
+To sort screening output
 
 Multiple proteins and ligands can be provided as input file
 -i <file>

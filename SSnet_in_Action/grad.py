@@ -4,12 +4,12 @@ import tensorflow as tf
 from keras.layers import Dense, Activation, Input,RepeatVector,Embedding, Flatten, Concatenate,Dropout
 from keras.models import Model
 from keras.utils.vis_utils import model_to_dot
-from sklearn import metrics as mt
+#from sklearn import metrics as mt
 from keras import metrics
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+#from sklearn.metrics import confusion_matrix
+#from sklearn.metrics import accuracy_score
+#import matplotlib.pyplot as plt
+#from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import average, concatenate,RepeatVector,Lambda,add,subtract
 from keras import backend as K
@@ -101,6 +101,9 @@ def create_pdb(pdb, heatmap):
     mod = 0 # model
     res = [] # residue
     for line in lines:
+        k = line.strip().split()
+        if len(k) < 1:
+            continue
         if line.strip().split()[0] in ['MODEL', 'ENDMDL']:
             st.append(line.strip())
             ref.append(None)
@@ -121,7 +124,8 @@ def create_pdb(pdb, heatmap):
         if i is not None:
             k_ref.append(i)
         else:
-            k_ref.append(ref[0])
+            #print (ref)
+            k_ref.append(0)#ref[0])
             
     k_ref = np.array(k_ref)
     k_ref = np.interp(k_ref, (k_ref.min(), k_ref.max()), (0.0, 100.0))
