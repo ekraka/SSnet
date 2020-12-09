@@ -1,5 +1,5 @@
-keras
-tensorflow
+keras 2.2.5
+tensorflow 1.9.0
 rdkit
 wget
 pickle
