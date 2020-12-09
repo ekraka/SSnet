@@ -353,7 +353,7 @@ If no idea how it works!, include -h as argument
             d['-h'] = 1
         elif sys.argv[i] == '-s':
             d['-s'] = 1
-        elif '-' in sys.argv[i]:
+        elif '-' in sys.argv[i] and len(sys.argv[i]) == 2:
             d[sys.argv[i]] = sys.argv[i+1]
     return d 
 
@@ -380,7 +380,7 @@ Multiple proteins and ligands can be provided as input file
 -i <file>
 
 Single protein can be described as
--p <pdb_file>
+-t <pdb_file>
 
 ligands can be provided as either SMILES or a .smi file with multiple ligands
 -l <smi>

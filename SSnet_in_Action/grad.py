@@ -32,6 +32,7 @@ def get_heatm(conv, x, model, ref = 0):
     
     #print (grads.shape)
     a, s = grads.shape[-2:]
+    #print(model.predict(x))
 
     # This is a vector of shape (512,), where each entry
     # is the mean intensity of the gradient over a specific feature map channel
