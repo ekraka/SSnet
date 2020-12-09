@@ -1,6 +1,11 @@
 
 ### Usage
 
+If probles, please make sure you have the following version:
+
+    keras 2.2.5
+    tensorflow 1.9.0
+
 parameters:
 -m <mode>
     
