@@ -21,7 +21,8 @@ import make_target as mtt
 from keras.regularizers import l2 
 import preprocessing_ligand as ppl 
 import grad
-
+import multiprocessing as mproc
+ 
 # remove if using saved fingerprints
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -163,7 +164,16 @@ def get_dat_sm(smiles):
 
     sm, X = [], []
     sm_dic = {}
-    count_er = 0 
+    count_er = 0
+
+    # added for faster computation
+    #print ('Parallel compuation for fingerprints') 
+    smiles = [i.strip().split()[0] for i in lines if len(i.strip().split()) > 0]
+    p = mproc.Pool(36)
+    fps = p.map(latent_space, smiles)
+    sm_dic = {smiles[i]:fps[i] for i in range (len(smiles))}
+
+
     for line in lines:
         k = line.strip().split()
         if len(k) > 0:
