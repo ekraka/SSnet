@@ -2,7 +2,7 @@
 ### Usage
 
 Binary files for Linux, Windows and OS-X can be found at https://smu.box.com/s/yjd4dm1k9c4axmg5i0wihbz3nx3tx1er
-
+Note that binary files do not require any pre-installation such as python.
 
 If problems based on tensorflow, please make sure you have the following version:
 
