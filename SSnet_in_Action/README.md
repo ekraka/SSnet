@@ -4,7 +4,7 @@
 ### Binary files for Linux, Windows and OS-X can be found at https://smu.box.com/s/yjd4dm1k9c4axmg5i0wihbz3nx3tx1er
 Note that binary files do not require any pre-installation such as python. Replace 'python path_to_SSnet_in_Action/predict.py' to the binary file. Check below for arguments.
 
-If using python, make sure you have the following version:
+If using python, make sure you have the following modules:
 
     keras
     h5py 2.10
