@@ -8,6 +8,7 @@ If using python, make sure you have the following version:
 
     keras 2.2.5
     tensorflow 1.9.0
+    h5py 2.10
 
 parameters:
 -m <mode>
