@@ -6,9 +6,10 @@ Note that binary files do not require any pre-installation such as python. Repla
 
 If using python, make sure you have the following version:
 
-    keras 2.2.5
-    tensorflow 1.9.0
+    keras
     h5py 2.10
+    python-wget
+    rdkit
 
 parameters:
 -m <mode>
