@@ -15,3 +15,7 @@ Click into corresponding directory and read the description in README.md file fo
 
 ## For dependencies check requirements.txt
 
+## Cite as
+
+Verma, N.; Qu, X.; Trozzi, F.; Elsaied, M.; Karki, N.; Tao, Y.; Zoltowski, B.; Larson, E.C.; Kraka, E. SSnet: A Deep Learning Approach for Protein-Ligand Interaction Prediction. Int. J. Mol. Sci. 2021, 22, 1392. https://doi.org/10.3390/ijms22031392
+
