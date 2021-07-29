@@ -87,6 +87,8 @@ results_pdb_file.txt
 
 GradCAM analysis can be perfomed by changing mode to grad
 -m grad
+    
+Note that GradCAM is ligand specific and thus only takes SMILES as ligand input (Multiple smiles through .smi files cannot be executed)
 
 ### Example
 
