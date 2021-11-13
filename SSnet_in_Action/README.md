@@ -12,7 +12,9 @@ If using python, make sure you have the following modules:
     rdkit
 
 parameters:
-Based on our experience, -m 25 works best for enrichment!
+Note: Based on our experience, -m 25 works best for enrichment!
+
+
 -m <mode>
     
       mode = 10 (Default)
